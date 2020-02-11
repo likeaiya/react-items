@@ -6,7 +6,7 @@ const {Item} = Form
 
 class Login extends Component {
 	//自定义验证密码
-	passwordvalidator = (rule,value,callback)=>{
+	passwordValidator = (rule,value,callback)=>{
 		//value是用户的输入,当用户输入不合法的时候,要调用callback
 		//callback何时调用?当用户输入不合法的时候
 		if(!value){
@@ -15,10 +15,10 @@ class Login extends Component {
 			callback('密码必须小于12位')
 		}else if(value.length < 4){
 			callback('密码必须大雨等于4位')
-		}else if(!/???){
+		}else if(!(/^\w+$/).test(value)){
 			callback('密码必须是英文\数字\下划线组成')
 		}else{
-			callback('')
+			callback()
 		}
 	}
 	//相应表单提交
