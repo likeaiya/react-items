@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import {Form,Icon,Input,Button,Checkbox} from 'antd';
+import {Form,Icon,Input,Button} from 'antd';
 import logo from './img/logo.png'
 import './css/login.less'
 const {Item} = Form
