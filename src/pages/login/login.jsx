@@ -5,6 +5,34 @@ import './css/login.less'
 const {Item} = Form
 
 class Login extends Component {
+	//自定义验证密码
+	passwordvalidator = (rule,value,callback)=>{
+		//value是用户的输入,当用户输入不合法的时候,要调用callback
+		//callback何时调用?当用户输入不合法的时候
+		if(!value){
+			callback('密码必须有奥')
+		}else if(value.length > 12){
+			callback('密码必须小于12位')
+		}else if(value.length < 4){
+			callback('密码必须大雨等于4位')
+		}else if(!/???){
+			callback('密码必须是英文\数字\下划线组成')
+		}else{
+			callback('')
+		}
+	}
+	//相应表单提交
+	handleSubmit = (event) =>{
+		//阻止表单提交的默认行为
+		event.preventDefault()  
+		//获取所有表单中用户的输入
+		this.props.from.validateFields((err,values) => {//validateFields 用户名密码
+			if(!err){
+				//如果输入的用户名和密码都没问题,就发送请求
+				console.log('发送了网络请求',values);//输出values为对象
+			}
+		});
+	}
 	render() {
 		const { getFieldDecorator } = this.props.form;
 		return (
@@ -15,6 +43,7 @@ class Login extends Component {
 				</div>
 				<div className="content">
 					<h1>用户登录</h1>
+					{/* 表单被提交的时候后出发 */}
 					<Form onSubmit={this.handleSubmit} className="login-form">
 						<Item>
 							{/* 
@@ -28,10 +57,7 @@ class Login extends Component {
 							{
 								getFieldDecorator('username', {
 									rules: [
-										{required: true, message: '用户名必须输入'},
-										{max:12,message: '用户名必须小于等于12位'},
-										{min:4,message: '用户名必须大于等于4位'},
-										{pattern:/^\w+$/,message: '用户名必须是英文、数字或下划线组成'}
+										{validator:this.passwordvalidator}
 									]
 								})(
 									<Input
