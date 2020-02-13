@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import {Form,Icon,Input,Button} from 'antd';
+import axios from 'axios'
 import logo from './img/logo.png'
 import './css/login.less'
 const {Item} = Form
@@ -26,10 +27,15 @@ class Login extends Component {
 		//阻止表单提交的默认行为
 		event.preventDefault()  
 		//获取所有表单中用户的输入
-		this.props.from.validateFields((err,values) => {//validateFields 用户名密码
-			if(!err){
-				//如果输入的用户名和密码都没问题,就发送请求
-				console.log('发送了网络请求',values);//输出values为对象
+		this.props.form.validateFields((err, values) => {
+			if (!err) {
+					  const {username,password} = values
+					  //如果输入的用户名和密码均没问题，就发送请求
+					  //console.log('发送了网络请求', values);
+					  axios.post('http://localhost:3000/login',`username=${username}&password=${password}`).then(
+						  (response)=>{console.log(response.data);},
+						  (error)=>{console.log(error);}
+					  )
 			}
 		});
 	}
