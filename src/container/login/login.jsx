@@ -1,9 +1,13 @@
 import React, { Component } from 'react'
-import {Form,Icon,Input,Button} from 'antd';
-import axios from 'axios'
+import {Form,Icon,Input,Button, message} from 'antd';
 import logo from './img/logo.png'
 import './css/login.less'
+import {reqLogin} from '../../api'
+import {connect} from 'react-redux'
+import {createSaveUserInfoAction} from '../../redux/actions/login'
+import {Redirect} from 'react-router-dom'
 const {Item} = Form
+
 
 class Login extends Component {
 	//自定义验证密码
@@ -17,30 +21,51 @@ class Login extends Component {
 		}else if(value.length < 4){
 			callback('密码必须大雨等于4位')
 		}else if(!(/^\w+$/).test(value)){
-			callback('密码必须是英文\数字\下划线组成')
+			callback('密码必须是英文.数字.下划线组成')
 		}else{
 			callback()
 		}
 	}
-	//相应表单提交
+	//响应表单提交
 	handleSubmit = (event) =>{
 		//阻止表单提交的默认行为
 		event.preventDefault()  
 		//获取所有表单中用户的输入
-		this.props.form.validateFields((err, values) => {
+		this.props.form.validateFields(async(err, values) => {
+			 //如果输入的用户名和密码均没问题，就发送请求
 			if (!err) {
 					  const {username,password} = values
-					  //如果输入的用户名和密码均没问题，就发送请求
+					 
 					  //console.log('发送了网络请求', values);
-					  axios.post('http://localhost:3000/login',`username=${username}&password=${password}`).then(
-						  (response)=>{console.log(response.data);},
-						  (error)=>{console.log(error);}
-					  )
+					 let result = await reqLogin(username,password)
+					 const {status,data,msg} = result;
+					 if(status === 0){
+						message.success('登陆成功啦')
+						//1.向redux中保存用户信息
+						this.props.saveUserInfo(data)
+						//2.
+
+						//3.跳转到admin页面
+						this.props.history.push('/admin')
+						
+					 }else{
+						 message.warning(msg)
+					 }
+					 //   myAxios.post('http://localhost:3000/login',values).then(
+					// 	  (response)=>{
+					// 		  console.log('成功的回调',response.response);
+					// 		  const {status} = response
+					// 		  if(status === 0) alert('登陆成功')
+					// 		  else alert('登录失败')
+					// 		}
+					//   )
 			}
 		});
 	}
 	render() {
 		const { getFieldDecorator } = this.props.form;
+		const {isLogin} = this.props.userInfo  
+		if(isLogin) return <Redirect to = '/admin'/>
 		return (
 			<div id="login">
 				<div className="header">
@@ -94,7 +119,12 @@ class Login extends Component {
 
 //Form.create()返回值依是一个函数，该函数接收一个组件，随后生成一个新组件，我们渲染那个新组件
 //Form.create()返回的方法能够加工组件，生成的新组件多了一个特别重要的属性：form
-export default Form.create()(Login);
+ 
 
+ export default connect(
+	 (state)=>({userInfo:state.userInfo}),  //用于映射状态)
+	 {saveUserInfo:createSaveUserInfoAction}   //用于映射操作状态的方法
+ )(Form.create()(Login))
 
+ 
 

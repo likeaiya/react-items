@@ -1,0 +1,1 @@
+export const BASE_URL = '' //定义所有ajax的基本路径
