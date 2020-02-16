@@ -17,8 +17,8 @@ axios.defaults.baseURL = BASE_URL
 
 //使用axios的请求拦截器
 axios.interceptors.request.use((config)=>{
-    NProgress.start();
-    NProgress.configure({ easing: 'ease', speed: 500 });
+    NProgress.start()
+    
     //config是配置对象,里面包含着所有本次请求的必要信息,比如:请求方式\请求的地址
     const {method,data} = config
    
@@ -26,7 +26,7 @@ axios.interceptors.request.use((config)=>{
        //如果是post请求,且请求体参数为json编码,比如:请求方式\请求的地址
         config.data = qs.stringify(data)
    }
-   console.log('请求拦截器',config.data);
+   
     return config
 })
 
